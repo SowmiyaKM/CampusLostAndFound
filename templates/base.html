@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}CampusConnect — Lost & Found{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎒</text></svg>">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<header class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="{% url 'items:home' %}" class="brand">
+      <span class="brand-mark">CC</span>
+      <span class="brand-text">CampusConnect</span>
+    </a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="{% url 'items:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+      <a href="{% url 'items:lost_items' %}" class="nav-link {% if request.resolver_match.url_name == 'lost_items' %}active{% endif %}">Lost Items</a>
+      <a href="{% url 'items:found_items' %}" class="nav-link {% if request.resolver_match.url_name == 'found_items' %}active{% endif %}">Found Items</a>
+      <a href="{% url 'items:about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a>
+      <a href="{% url 'items:contact' %}" class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'items:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+      {% endif %}
+    </nav>
+
+    <div class="navbar-search">
+      <input type="text" id="navSearchInput" class="nav-search-input" placeholder="Search lost or found items…" autocomplete="off">
+      <div id="navSearchResults" class="nav-search-results"></div>
+    </div>
+
+    <div class="navbar-actions">
+      {% if user.is_authenticated %}
+        <div class="notif-wrap">
+          <button class="icon-btn" id="notifBtn" aria-label="Notifications">
+            🔔
+            {% if nav_unread_count > 0 %}<span class="notif-badge">{{ nav_unread_count }}</span>{% endif %}
+          </button>
+          <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-dropdown-header">Notifications</div>
+            {% for n in nav_notifications %}
+              <a href="{% url 'items:mark_notification_read' n.pk %}" class="notif-item {% if not n.is_read %}unread{% endif %}">
+                <span class="notif-dot notif-dot-{{ n.notif_type }}"></span>
+                <span class="notif-text">{{ n.message }}</span>
+              </a>
+            {% empty %}
+              <div class="notif-empty">You're all caught up 🎉</div>
+            {% endfor %}
+            <a href="{% url 'items:notifications' %}" class="notif-viewall">View all notifications</a>
+          </div>
+        </div>
+        {% if user.is_staff %}
+          <a href="{% url 'items:admin_dashboard' %}" class="icon-btn" title="Admin Dashboard">🛠️</a>
+        {% endif %}
+        <a href="{% url 'accounts:profile' %}" class="avatar-link" title="{{ user.get_full_name }}">
+          {% if user.avatar %}
+            <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="avatar-img">
+          {% else %}
+            <span class="avatar-fallback">{{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}</span>
+          {% endif %}
+        </a>
+        <a href="{% url 'accounts:logout' %}" class="btn btn-ghost btn-sm">Log out</a>
+      {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-ghost btn-sm">Log in</a>
+        <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-sm">Sign up</a>
+      {% endif %}
+    </div>
+
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <input type="text" id="mobileSearchInput" class="nav-search-input" placeholder="Search items…" autocomplete="off">
+    <a href="{% url 'items:home' %}">Home</a>
+    <a href="{% url 'items:lost_items' %}">Lost Items</a>
+    <a href="{% url 'items:found_items' %}">Found Items</a>
+    <a href="{% url 'items:about' %}">About</a>
+    <a href="{% url 'items:contact' %}">Contact</a>
+    {% if user.is_authenticated %}
+      <a href="{% url 'items:dashboard' %}">Dashboard</a>
+      <a href="{% url 'accounts:profile' %}">Profile</a>
+      {% if user.is_staff %}<a href="{% url 'items:admin_dashboard' %}">Admin Dashboard</a>{% endif %}
+      <a href="{% url 'accounts:logout' %}">Log out</a>
+    {% else %}
+      <a href="{% url 'accounts:login' %}">Log in</a>
+      <a href="{% url 'accounts:register' %}" class="mobile-cta">Sign up</a>
+    {% endif %}
+  </div>
+</header>
+
+<div class="toast-container" id="toastContainer">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="toast toast-{{ message.tags }}" data-autohide="6000">
+        <span class="toast-icon">
+          {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}⚠️{% elif message.tags == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+        </span>
+        <span class="toast-msg">{{ message }}</span>
+        <button class="toast-close" aria-label="Dismiss">&times;</button>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+<main id="main-content">
+{% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="brand-mark">CC</span>
+      <span class="brand-text">CampusConnect</span>
+      <p>Helping students reunite with what they've lost — one report at a time.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Explore</h4>
+      <a href="{% url 'items:lost_items' %}">Lost Items</a>
+      <a href="{% url 'items:found_items' %}">Found Items</a>
+      <a href="{% url 'items:about' %}">About</a>
+      <a href="{% url 'items:contact' %}">Contact</a>
+    </div>
+    <div class="footer-links">
+      <h4>Account</h4>
+      {% if user.is_authenticated %}
+        <a href="{% url 'items:dashboard' %}">Dashboard</a>
+        <a href="{% url 'accounts:profile' %}">Profile</a>
+      {% else %}
+        <a href="{% url 'accounts:login' %}">Log in</a>
+        <a href="{% url 'accounts:register' %}">Sign up</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="footer-bottom">© {% now "Y" %} CampusConnect · College of Engineering and Technology</div>
+</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

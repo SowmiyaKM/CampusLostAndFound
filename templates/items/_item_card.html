@@ -1,0 +1,26 @@
+{% load static %}
+<div class="card item-card">
+  <a href="{% if kind == 'lost' %}{% url 'items:lost_detail' item.pk %}{% else %}{% url 'items:found_detail' item.pk %}{% endif %}" class="item-card-media">
+    {% if item.image %}
+      <img src="{{ item.image.url }}" alt="{{ item.title }}" loading="lazy">
+    {% else %}
+      <div class="no-image">{% if kind == 'lost' %}🔎{% else %}🎁{% endif %}</div>
+    {% endif %}
+    <span class="item-badge item-badge-{{ kind }}">{% if kind == 'lost' %}Lost{% else %}Found{% endif %}</span>
+    {% if item.status == 'found' %}<span class="item-badge-status">Found</span>{% elif item.status == 'returned' %}<span class="item-badge-status">Returned</span>{% endif %}
+  </a>
+  <div class="item-card-body">
+    <span class="item-card-cat">{{ item.get_category_display }}</span>
+    <h3 class="item-card-title">
+      <a href="{% if kind == 'lost' %}{% url 'items:lost_detail' item.pk %}{% else %}{% url 'items:found_detail' item.pk %}{% endif %}">{{ item.title }}</a>
+    </h3>
+    <div class="item-card-meta">
+      <span>📍 {{ item.location }}</span>
+      <span>📅 {% if kind == 'lost' %}{{ item.date_lost }}{% else %}{{ item.date_found }}{% endif %}</span>
+    </div>
+    {% if kind == 'lost' and item.reward %}<span class="reward-chip">💰 {{ item.reward }}</span>{% endif %}
+  </div>
+  <div class="item-card-footer">
+    <a href="{% if kind == 'lost' %}{% url 'items:lost_detail' item.pk %}{% else %}{% url 'items:found_detail' item.pk %}{% endif %}" class="btn btn-outline btn-sm btn-block">View Details</a>
+  </div>
+</div>

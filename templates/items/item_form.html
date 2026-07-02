@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}{{ form_title }} — CampusConnect{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:28px;">
+      <span class="eyebrow">{% if kind == 'lost' %}🔎 Lost Item{% else %}🎁 Found Item{% endif %}</span>
+      <h1>{{ form_title }}</h1>
+      <p>{% if kind == 'lost' %}The more detail you give, the faster the community can help spot it.{% else %}Thanks for helping — every detail helps reunite this item with its owner.{% endif %}</p>
+    </div>
+
+    <div class="card form-card form-card-wide">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="form-errorlist">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="form-group">
+          <label for="{{ form.title.id_for_label }}">Item Name</label>
+          {{ form.title }}
+          {% if form.title.errors %}<div class="form-error">{{ form.title.errors|join:", " }}</div>{% endif %}
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="{{ form.category.id_for_label }}">Category</label>
+            {{ form.category }}
+            {% if form.category.errors %}<div class="form-error">{{ form.category.errors|join:", " }}</div>{% endif %}
+          </div>
+          <div class="form-group">
+            <label for="{% if kind == 'lost' %}{{ form.date_lost.id_for_label }}{% else %}{{ form.date_found.id_for_label }}{% endif %}">
+              {% if kind == 'lost' %}Date Lost{% else %}Date Found{% endif %}
+            </label>
+            {% if kind == 'lost' %}{{ form.date_lost }}{% else %}{{ form.date_found }}{% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.description.id_for_label }}">Description</label>
+          {{ form.description }}
+          {% if form.description.errors %}<div class="form-error">{{ form.description.errors|join:", " }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.location.id_for_label }}">{% if kind == 'lost' %}Last Seen Location{% else %}Found Location{% endif %}</label>
+          {{ form.location }}
+          {% if form.location.errors %}<div class="form-error">{{ form.location.errors|join:", " }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.image.id_for_label }}">Upload Image</label>
+          {{ form.image }}
+          <p class="form-hint">A clear photo dramatically improves match accuracy.</p>
+        </div>
+
+        {% if kind == 'lost' %}
+          <div class="form-group">
+            <label for="{{ form.reward.id_for_label }}">Reward (Optional)</label>
+            {{ form.reward }}
+          </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label for="{{ form.contact_info.id_for_label }}">Contact Information</label>
+          {{ form.contact_info }}
+          {% if form.contact_info.errors %}<div class="form-error">{{ form.contact_info.errors|join:", " }}</div>{% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+          {% if editing %}Save Changes{% else %}{% if kind == 'lost' %}Submit Lost Item Report{% else %}Submit Found Item Report{% endif %}{% endif %}
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — CampusConnect{% endblock %}
+{% block content %}
+<div class="dash-header">
+  <div class="dash-header-inner">
+    <h1>Welcome back, {{ user.first_name|default:user.username }} 👋</h1>
+    <p>{{ user.get_department_display }} · Year {{ user.year }} · {{ user.student_id }}</p>
+  </div>
+</div>
+
+<div class="dash-body">
+  <div class="stat-grid">
+    <div class="card stat-card">
+      <span class="stat-icon">🔎</span>
+      <span class="stat-num">{{ total_lost }}</span>
+      <span class="stat-label">Total Lost Items (Active)</span>
+    </div>
+    <div class="card stat-card">
+      <span class="stat-icon">🎁</span>
+      <span class="stat-num">{{ total_found }}</span>
+      <span class="stat-label">Total Found Items (Active)</span>
+    </div>
+    <div class="card stat-card">
+      <span class="stat-icon">✅</span>
+      <span class="stat-num">{{ total_returned }}</span>
+      <span class="stat-label">Successfully Returned</span>
+    </div>
+    <div class="card stat-card">
+      <span class="stat-icon">🔔</span>
+      <span class="stat-num">{{ unread_notifications }}</span>
+      <span class="stat-label">Unread Notifications</span>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:44px;">
+    <div>
+      <span class="eyebrow">Quick actions</span>
+      <h2>What would you like to do?</h2>
+    </div>
+  </div>
+  <div class="quick-actions">
+    <a href="{% url 'items:create_lost' %}" class="card quick-action-card">
+      <div class="quick-action-icon">📢</div>
+      <h4>Report Lost Item</h4>
+      <p>Lost something? Let the campus know what to look for.</p>
+    </a>
+    <a href="{% url 'items:create_found' %}" class="card quick-action-card">
+      <div class="quick-action-icon">🎁</div>
+      <h4>Report Found Item</h4>
+      <p>Found something? Help it find its way home.</p>
+    </a>
+    <a href="{% url 'items:lost_items' %}" class="card quick-action-card">
+      <div class="quick-action-icon">🔍</div>
+      <h4>Browse Lost Items</h4>
+      <p>Search through everything reported lost on campus.</p>
+    </a>
+    <a href="{% url 'accounts:profile' %}" class="card quick-action-card">
+      <div class="quick-action-icon">📁</div>
+      <h4>My Reports ({{ my_lost_count|add:my_found_count }})</h4>
+      <p>Manage the items you've reported lost or found.</p>
+    </a>
+  </div>
+
+  <div class="section-header" style="margin-top:44px;">
+    <div>
+      <span class="eyebrow">Activity</span>
+      <h2>Recent Posts</h2>
+    </div>
+  </div>
+  <div class="item-grid">
+    {% for item in recent_posts %}
+      {% include "items/_item_card.html" with item=item kind=item.kind %}
+    {% empty %}
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <h3>Nothing here yet</h3>
+        <p>Once students start reporting items, you'll see the latest activity here.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}CampusConnect — Reunite Lost Items with Their Owners{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <span class="hero-eyebrow">🎓 Built for College students</span>
+      <h1>Lost something on campus? <span>Let's find it together.</span></h1>
+      <p class="hero-sub">CampusConnect is the fastest way for students to report lost belongings, post found items, and get matched with their owners — all in one place.</p>
+      <div class="hero-ctas">
+        {% if user.is_authenticated %}
+          <a href="{% url 'items:create_lost' %}" class="btn btn-primary">📢 Report Lost Item</a>
+          <a href="{% url 'items:create_found' %}" class="btn btn-outline">🎁 Report Found Item</a>
+        {% else %}
+          <a href="{% url 'accounts:register' %}" class="btn btn-primary">Get Started Free</a>
+          <a href="{% url 'items:lost_items' %}" class="btn btn-outline">Browse Items</a>
+        {% endif %}
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-num">{{ total_lost }}</div>
+          <div class="hero-stat-label">Lost items reported</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">{{ total_found }}</div>
+          <div class="hero-stat-label">Found items posted</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">{{ total_returned }}</div>
+          <div class="hero-stat-label">Successfully returned</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">{{ total_users }}</div>
+          <div class="hero-stat-label">Students onboard</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card hero-card-1">
+        <div class="hero-card-icon">🎒</div>
+        <div class="hero-card-title">Blue Backpack</div>
+        <div class="hero-card-sub">Lost near Library · 2 days ago</div>
+      </div>
+      <div class="hero-card hero-card-2">
+        <div class="hero-card-icon">🔑</div>
+        <div class="hero-card-title">Key Bunch Found</div>
+        <div class="hero-card-sub">Canteen · Matched ✅</div>
+      </div>
+      <div class="hero-card hero-card-3">
+        <div class="hero-card-icon">💳</div>
+        <div class="hero-card-title">Student ID Card</div>
+        <div class="hero-card-sub">Returned to owner 🎉</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">Freshly reported</span>
+        <h2>Recently Lost Items</h2>
+      </div>
+      <a href="{% url 'items:lost_items' %}" class="btn btn-ghost btn-sm">View all →</a>
+    </div>
+    <div class="item-grid">
+      {% for item in recent_lost %}
+        {% include "items/_item_card.html" with item=item kind="lost" %}
+      {% empty %}
+        <div class="empty-state">
+          <div class="empty-state-icon">🧭</div>
+          <h3>No lost items reported yet</h3>
+          <p>Be the first to report a lost item and get the campus community searching.</p>
+          {% if user.is_authenticated %}<a href="{% url 'items:create_lost' %}" class="btn btn-primary">Report Lost Item</a>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">Good deeds</span>
+        <h2>Recently Found Items</h2>
+      </div>
+      <a href="{% url 'items:found_items' %}" class="btn btn-ghost btn-sm">View all →</a>
+    </div>
+    <div class="item-grid">
+      {% for item in recent_found %}
+        {% include "items/_item_card.html" with item=item kind="found" %}
+      {% empty %}
+        <div class="empty-state">
+          <div class="empty-state-icon">🎁</div>
+          <h3>No found items posted yet</h3>
+          <p>Found something on campus? Post it here and help reunite it with its owner.</p>
+          {% if user.is_authenticated %}<a href="{% url 'items:create_found' %}" class="btn btn-primary">Report Found Item</a>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">How it works</span>
+        <h2>Three simple steps</h2>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <div class="card quick-action-card">
+        <div class="quick-action-icon">📝</div>
+        <h4>1. Report</h4>
+        <p>Log a lost or found item with a photo, category, and location in under a minute.</p>
+      </div>
+      <div class="card quick-action-card">
+        <div class="quick-action-icon">🔍</div>
+        <h4>2. Match</h4>
+        <p>Our matching engine compares categories and item names to surface likely matches automatically.</p>
+      </div>
+      <div class="card quick-action-card">
+        <div class="quick-action-icon">🤝</div>
+        <h4>3. Reunite</h4>
+        <p>Connect directly with the finder or owner and mark the item as returned once reunited.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

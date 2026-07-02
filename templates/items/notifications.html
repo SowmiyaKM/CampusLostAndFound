@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Notifications — CampusConnect{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:700px;">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">Stay updated</span>
+        <h2>Notifications</h2>
+      </div>
+    </div>
+    <div class="card" style="padding:0;">
+      {% for n in notifications %}
+        <a href="{% if n.link %}{{ n.link }}{% else %}#{% endif %}" class="notif-item" style="padding:18px 22px;">
+          <span class="notif-dot notif-dot-{{ n.notif_type }}"></span>
+          <div>
+            <div class="notif-text">{{ n.message }}</div>
+            <div style="font-size:.75rem; color:var(--text-muted); margin-top:4px;">{{ n.created_at|timesince }} ago</div>
+          </div>
+        </a>
+      {% empty %}
+        <div class="empty-state">
+          <div class="empty-state-icon">🔔</div>
+          <h3>No notifications yet</h3>
+          <p>We'll let you know when there's a potential match or update on your reports.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

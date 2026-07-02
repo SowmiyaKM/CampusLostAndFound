@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — CampusConnect{% endblock %}
+{% block content %}
+<div class="dash-header">
+  <div class="dash-header-inner">
+    <h1>🛠️ Admin Dashboard</h1>
+    <p>Campus-wide analytics and moderation overview.</p>
+  </div>
+</div>
+
+<div class="dash-body">
+  <div class="stat-grid">
+    <div class="card stat-card">
+      <span class="stat-icon">👥</span>
+      <span class="stat-num">{{ total_users }}</span>
+      <span class="stat-label">Total Users</span>
+    </div>
+    <div class="card stat-card">
+      <span class="stat-icon">🔎</span>
+      <span class="stat-num">{{ total_lost }}</span>
+      <span class="stat-label">Lost Items ({{ active_lost }} active)</span>
+    </div>
+    <div class="card stat-card">
+      <span class="stat-icon">🎁</span>
+      <span class="stat-num">{{ total_found }}</span>
+      <span class="stat-label">Found Items ({{ active_found }} active)</span>
+    </div>
+    <div class="card stat-card">
+      <span class="stat-icon">✅</span>
+      <span class="stat-num">{{ total_returned }}</span>
+      <span class="stat-label">Returned Items</span>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:44px;">
+    <div>
+      <span class="eyebrow">Moderation</span>
+      <h2>Manage in Django Admin</h2>
+      <p class="section-sub">Delete inappropriate posts, edit records in bulk, and manage user accounts from the full Django admin panel.</p>
+    </div>
+    <a href="/admin/" class="btn btn-secondary">Open Django Admin →</a>
+  </div>
+
+  <div class="section-header" style="margin-top:44px;">
+    <h2>Recent Lost Reports</h2>
+  </div>
+  <div class="card table-card">
+    <table class="data-table">
+      <thead><tr><th>Item</th><th>Category</th><th>Owner</th><th>Status</th><th>Posted</th></tr></thead>
+      <tbody>
+        {% for item in recent_lost %}
+          <tr>
+            <td><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></td>
+            <td>{{ item.get_category_display }}</td>
+            <td>{{ item.owner.username }}</td>
+            <td><span class="badge {% if item.status == 'active' %}badge-active{% else %}badge-done{% endif %}">{{ item.get_status_display }}</span></td>
+            <td>{{ item.created_at|timesince }} ago</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No lost reports yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-header" style="margin-top:44px;">
+    <h2>Recent Found Reports</h2>
+  </div>
+  <div class="card table-card">
+    <table class="data-table">
+      <thead><tr><th>Item</th><th>Category</th><th>Finder</th><th>Status</th><th>Posted</th></tr></thead>
+      <tbody>
+        {% for item in recent_found %}
+          <tr>
+            <td><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></td>
+            <td>{{ item.get_category_display }}</td>
+            <td>{{ item.finder.username }}</td>
+            <td><span class="badge {% if item.status == 'active' %}badge-active{% else %}badge-done{% endif %}">{{ item.get_status_display }}</span></td>
+            <td>{{ item.created_at|timesince }} ago</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No found reports yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-header" style="margin-top:44px;">
+    <h2>Newest Students</h2>
+  </div>
+  <div class="card table-card">
+    <table class="data-table">
+      <thead><tr><th>Name</th><th>Student ID</th><th>Department</th><th>Year</th></tr></thead>
+      <tbody>
+        {% for u in recent_users %}
+          <tr>
+            <td>{{ u.get_full_name|default:u.username }}</td>
+            <td>{{ u.student_id }}</td>
+            <td>{{ u.get_department_display }}</td>
+            <td>{{ u.year }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No students registered yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

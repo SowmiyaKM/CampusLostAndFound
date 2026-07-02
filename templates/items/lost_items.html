@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Lost Items — CampusConnect{% endblock %}
+{% block content %}
+<section class="section" style="padding-bottom:0;">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">Browse</span>
+        <h2>Lost Items</h2>
+        <p class="section-sub">Search and filter everything reported lost on campus.</p>
+      </div>
+      {% if user.is_authenticated %}<a href="{% url 'items:create_lost' %}" class="btn btn-primary">📢 Report Lost Item</a>{% endif %}
+    </div>
+
+    <div class="status-tabs">
+      <a href="?status=active" class="status-tab {% if status_filter == 'active' %}active{% endif %}">Active</a>
+      <a href="?status=found" class="status-tab {% if status_filter == 'found' %}active{% endif %}">Found / Resolved</a>
+      <a href="?status=all" class="status-tab {% if status_filter == 'all' %}active{% endif %}">All</a>
+    </div>
+
+    <form method="get" class="filter-bar">
+      <input type="hidden" name="status" value="{{ status_filter }}">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="q">Search</label>
+          <input type="text" name="q" id="q" class="form-input" placeholder="Item name or description" value="{{ request.GET.q }}">
+        </div>
+        <div class="filter-group">
+          <label for="category">Category</label>
+          <select name="category" id="category" class="form-input">
+            <option value="">All Categories</option>
+            {% for value, label in categories %}
+              <option value="{{ value }}" {% if request.GET.category == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="location">Location</label>
+          <input type="text" name="location" id="location" class="form-input" placeholder="e.g. Library" value="{{ request.GET.location }}">
+        </div>
+        <div class="filter-group">
+          <label for="date">Date Lost</label>
+          <input type="date" name="date" id="date" class="form-input" value="{{ request.GET.date }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="item-grid" id="itemGrid">
+      {% for item in page_obj %}
+        {% include "items/_item_card.html" with item=item kind="lost" %}
+      {% empty %}
+        <div class="empty-state">
+          <div class="empty-state-icon">🧭</div>
+          <h3>No lost items match your search</h3>
+          <p>Try a different keyword, or clear your filters to see everything.</p>
+          <a href="{% url 'items:lost_items' %}" class="btn btn-outline">Clear Filters</a>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&status={{ status_filter }}" class="page-link">‹</a>{% endif %}
+        {% for num in page_obj.paginator.page_range %}
+          <a href="?page={{ num }}&status={{ status_filter }}" class="page-link {% if page_obj.number == num %}active{% endif %}">{{ num }}</a>
+        {% endfor %}
+        {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&status={{ status_filter }}" class="page-link">›</a>{% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

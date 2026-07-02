@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}About — CampusConnect{% endblock %}
+{% block content %}
+<section class="hero" style="padding-bottom:40px;">
+  <div class="container" style="max-width:800px;">
+    <span class="hero-eyebrow">About us</span>
+    <h1>Built by students, for students.</h1>
+    <p class="hero-sub">CampusConnect started as a simple idea: campuses lose thousands of items every semester — ID cards, wallets, chargers, water bottles — and most never make it back to their owners because there's no central place to look. We built CampusConnect to fix that.</p>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="quick-actions">
+      <div class="card quick-action-card">
+        <div class="quick-action-icon">🎯</div>
+        <h4>Our Mission</h4>
+        <p>Make it effortless for students to report, discover, and recover lost belongings across campus.</p>
+      </div>
+      <div class="card quick-action-card">
+        <div class="quick-action-icon">🧠</div>
+        <h4>Smart Matching</h4>
+        <p>We automatically compare newly found items against lost reports so likely matches surface instantly.</p>
+      </div>
+      <div class="card quick-action-card">
+        <div class="quick-action-icon">🔒</div>
+        <h4>Safe & Verified</h4>
+        <p>Every account is tied to a verified student ID, department, and year — keeping the community trustworthy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container" style="max-width:800px;">
+    <h2>How CampusConnect helps</h2>
+    <p>Whether you've misplaced your ID card between lectures or found a stray umbrella outside the canteen, CampusConnect gives every item a home page: photos, description, location, and a direct line to the person who can help. Our lightweight matching engine flags potential matches by category and item name so nothing sits unclaimed for long.</p>
+    <p>The platform is maintained as an ongoing student project, with the Django-powered admin panel giving campus staff full oversight of reports, users, and resolved cases.</p>
+  </div>
+</section>
+{% endblock %}
